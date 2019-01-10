@@ -104,6 +104,18 @@
         <artifactId>maven-deploy-plugin</artifactId>
         <version>2.8.2</version>
       </plugin>
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <configuration>
+          <repository>k8s-test/${project.artifactId}</repository>
+          <buildArgs>
+            <JAR_FILE>target/minion-1.0-SNAPSHOT.jar</JAR_FILE>
+          </buildArgs>
+            <tag>1.0</tag>
+        </configuration>
+        <version>1.4.4</version>
+      </plugin>
     </plugins>
   </build>
 
