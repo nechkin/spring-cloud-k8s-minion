@@ -99,7 +99,7 @@ public class Application implements CommandLineRunner {
                 if ("boss".equals(type)) {
 
                     String from = appName + "@" + InetAddress.getLocalHost().getHostName();
-                    String url = "http://" + se.getServiceId();
+                    String url = se.getUri().toString();
                     return bossClient.requestMission(url, from);
                 }
             }

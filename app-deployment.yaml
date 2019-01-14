@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minion
+  labels:
+    app: minion
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minion
+  template:
+    metadata:
+      labels:
+        app: minion
+    spec:
+      containers:
+        - name: boss
+          image: k8s-test/minion:1.0
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minion
+  labels:
+    app: minion
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 8080
+      protocol: TCP
+    - name: debug
+      port: 5005
+      protocol: TCP
+  selector:
+    app: minion
