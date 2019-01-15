@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,21 +17,20 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Map;
-
-import static org.minions.demo.BossClientService.FIND_A_BOSS_TASK;
 
 @SpringBootApplication
 @EnableScheduling
 @EnableDiscoveryClient
 @EnableCircuitBreaker
+@EnableFeignClients(basePackageClasses = Application.class)
 public class Application implements CommandLineRunner {
 
     private static final Log log = LogFactory.getLog(Application.class);
 
-    @Autowired
-    private DiscoveryClient discoveryClient;
+    public static final String FIND_A_BOSS_TASK = "find a new boss";
+
+    // @Autowired
+    // private DiscoveryClient discoveryClient;
 
     @Autowired
     private BossClientService bossClient;
@@ -89,21 +87,25 @@ public class Application implements CommandLineRunner {
      * Find a new boss by filtering the available services based on Metadata
      */
     private String findANewBoss() throws UnknownHostException {
-        List<String> services = this.discoveryClient.getServices();
 
-        for (String service : services) {
-            List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
-            for (ServiceInstance se : instances) {
-                Map<String, String> metadata = se.getMetadata();
-                String type = metadata.get("type");
-                if ("boss".equals(type)) {
+        String from = appName + "@" + InetAddress.getLocalHost().getHostName();
+        return bossClient.requestMission(from);
 
-                    String from = appName + "@" + InetAddress.getLocalHost().getHostName();
-                    String url = se.getUri().toString();
-                    return bossClient.requestMission(url, from);
-                }
-            }
-        }
-        return FIND_A_BOSS_TASK;
+        // List<String> services = this.discoveryClient.getServices();
+        //
+        // for (String service : services) {
+        //     List<ServiceInstance> instances = this.discoveryClient.getInstances(service);
+        //     for (ServiceInstance se : instances) {
+        //         Map<String, String> metadata = se.getMetadata();
+        //         String type = metadata.get("type");
+        //         if ("boss".equals(type)) {
+        //
+        //             String from = appName + "@" + InetAddress.getLocalHost().getHostName();
+        //             String url = "http://" + se.getUri().toString();
+        //             return bossClient.requestMission(url, from);
+        //         }
+        //     }
+        // }
+        // return FIND_A_BOSS_TASK;
     }
 }

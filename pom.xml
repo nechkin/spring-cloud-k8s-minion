@@ -17,7 +17,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring-boot.version>2.0.4.RELEASE</spring-boot.version>
     <spring-cloud.version>Finchley.SR1</spring-cloud.version>
-    <spring.cloud.k8s.version>1.0.0.M2</spring.cloud.k8s.version>
+    <spring.cloud.k8s.version>1.0.0.RC2</spring.cloud.k8s.version>
     <maven-compiler-plugin.version>3.7.0</maven-compiler-plugin.version>
   </properties>
 
@@ -49,14 +49,6 @@
   <dependencies>
     <dependency>
       <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-kubernetes-discovery</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-starter-kubernetes-config</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
       <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
     </dependency>
     <dependency>
@@ -72,7 +64,69 @@
       <artifactId>spring-boot-starter-test</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- Feign -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-openfeign</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>org.springframework.security</groupId>
+          <artifactId>spring-security-rsa</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- Client load balancing -->
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+    </dependency>
+
   </dependencies>
+
+  <profiles>
+
+    <profile>
+      <id>eureka</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>kubernetes</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+
+      <dependencies>
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-kubernetes-discovery</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-kubernetes-config</artifactId>
+        </dependency>
+
+        <!-- Client load balancing, automatically discover at which endpoint(s) it can reach a given service without
+        kubernetes DNS -->
+        <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-starter-kubernetes-ribbon</artifactId>
+        </dependency>
+      </dependencies>
+
+    </profile>
+
+  </profiles>
 
   <build>
     <plugins>
