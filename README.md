@@ -1,7 +1,8 @@
 # spring-cloud-k8s-minion
 
 <h3>Spring Kubernetes discovery</h3>
-~~~
+
+```
 mvn clean install
 eval $(minikube docker-env)
 mvn dockerfile:build
@@ -16,19 +17,21 @@ or
 
 export NODE_PORT=$(kubectl get services/minion -o go-template='{{(index .spec.ports 0).nodePort}}')
 curl $(minikube ip):$NODE_PORT
-~~~
+```
 
 <h3>Eureka</h3>
 Run eureka server 
-~~~
+
+```
 cd eureka-server
 mvn clean install
 mvn spring-boot:run
 cd ..
-~~~
+```
 
 Run minion with eureka client
-~~~
+
+```
 mvn clean install -P 'eureka,!kubernetes'
 mvn spring-boot:run
-~~~
+```
